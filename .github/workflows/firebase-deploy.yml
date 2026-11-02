@@ -15,15 +15,17 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_TOKEN }}'
+
       - name: Create firebase.json config
         run: |
           if [ ! -f firebase.json ]; then
             echo '{"hosting": {"public": "."}}' > firebase.json
           fi
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'
-          channelId: live
-          projectId: syriacash-app
+      - name: Deploy to Firebase Hosting
+        run: |
+          npx firebase-tools deploy --only hosting --project syriacash-app --non-interactive
