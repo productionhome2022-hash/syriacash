@@ -21,9 +21,12 @@ jobs:
             echo '{"hosting": {"public": "."}}' > firebase.json
           fi
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'
-          channelId: live
-          projectId: syriacash
+      - name: Create Service Account File
+        run: |
+          echo '${{ secrets.FIREBASE_TOKEN }}' > service-account.json
+
+      - name: Deploy to Firebase
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: service-account.json
+        run: |
+          npx firebase-tools deploy --project syriacash --non-interactive
