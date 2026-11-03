@@ -21,16 +21,10 @@ jobs:
             echo '{"hosting": {"public": "."}}' > firebase.json
           fi
 
-      - name: Create Service Account File Safely
-        run: |
-          cat << 'EOF' > service-account.json
-          ${{ secrets.FIREBASE_TOKEN }}
-          EOF
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_file_path: 'service-account.json'
+          credentials_json: '${{ secrets.FIREBASE_TOKEN }}'
 
       - name: Deploy to Firebase Hosting
         run: |
