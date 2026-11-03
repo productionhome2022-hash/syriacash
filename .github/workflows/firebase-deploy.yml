@@ -21,11 +21,16 @@ jobs:
             echo '{"hosting": {"public": "."}}' > firebase.json
           fi
 
-      - name: Create Service Account File
+      - name: Generate Service Account File via Node.js
+        env:
+          FIREBASE_KEY_JSON: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          cat << 'EOF' > service-account.json
-          ${{ secrets.FIREBASE_TOKEN }}
-          EOF
+          node -e '
+            const fs = require("fs");
+            const raw = process.env.FIREBASE_KEY_JSON;
+            const parsed = JSON.parse(raw);
+            fs.writeFileSync("service-account.json", JSON.stringify(parsed, null, 2));
+          '
 
       - name: Deploy to Firebase Hosting
         env:
