@@ -21,16 +21,23 @@ jobs:
             echo '{"hosting": {"public": "."}}' > firebase.json
           fi
 
-      - name: Generate Service Account File via Node.js
-        env:
-          FIREBASE_KEY_JSON: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Generate Service Account File safely
         run: |
-          node -e '
-            const fs = require("fs");
-            const raw = process.env.FIREBASE_KEY_JSON;
-            const parsed = JSON.parse(raw);
-            fs.writeFileSync("service-account.json", JSON.stringify(parsed, null, 2));
-          '
+          cat << 'EOF' > service-account.json
+          {
+            "type": "service_account",
+            "project_id": "syriacash-app",
+            "private_key_id": "9a0280d7018dffac1fbff28fb5199301d480d2cb",
+            "private_key": "${{ secrets.FIREBASE_PRIVATE_KEY }}",
+            "client_email": "firebase-adminsdk-fbsvc@syriacash-app.iam.gserviceaccount.com",
+            "client_id": "107326129762595840906",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40syriacash-app.iam.gserviceaccount.com",
+            "universe_domain": "googleapis.com"
+          }
+          EOF
 
       - name: Deploy to Firebase Hosting
         env:
