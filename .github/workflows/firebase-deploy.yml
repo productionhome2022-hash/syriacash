@@ -15,6 +15,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Create firebase.json config
+        run: |
+          if [ ! -f firebase.json ]; then
+            echo '{"hosting": {"public": "."}}' > firebase.json
+          fi
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
